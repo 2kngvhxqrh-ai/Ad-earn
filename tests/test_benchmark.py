@@ -10,6 +10,8 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual(first["money_features"], "DISABLED")
         self.assertEqual(len(first["ranking"]), 4)
         self.assertTrue(all(row["seeds_tested"] == 4 for row in first["ranking"]))
+        self.assertTrue(first["fixed_strategy_expected_returns_equal"])
+        self.assertEqual(set(first["theoretical_fixed_strategy_points_per_turn"].values()), {0.1})
 
     def test_epsilon_tuning_reports_separate_holdout(self):
         result = run_epsilon_experiment(seeds=3, rounds=30)
