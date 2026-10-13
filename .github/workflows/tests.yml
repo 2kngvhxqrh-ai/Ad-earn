@@ -19,3 +19,5 @@ jobs:
         run: python agent.py --rounds 120 --seed 42
       - name: Run multi-agent world
         run: python multi_agent.py --rounds 120 --seed 42
+      - name: Run strategy benchmark
+        run: python benchmark.py --seeds 10 --rounds 120
