@@ -1,0 +1,35 @@
+name: Autonomous money-free research lab
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run safety and regression tests
+        run: python -m unittest discover -s tests -v
+      - name: Run repeatable baseline benchmark
+        run: |
+          python benchmark.py --seeds 30 --rounds 300
+          mkdir -p autonomous-reports
+          cp data/benchmark_report.json autonomous-reports/baseline-benchmark.json
+      - name: Tune exploration on training seeds and evaluate on held-out seeds
+        run: |
+          python benchmark.py --tune-epsilon --seeds 30 --rounds 300
+          cp data/benchmark_report.json autonomous-reports/epsilon-holdout.json
+      - name: Publish research reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: autonomous-lab-reports-${{ github.run_number }}
+          path: autonomous-reports/
+          if-no-files-found: warn
+          retention-days: 30
