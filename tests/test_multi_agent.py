@@ -1,5 +1,7 @@
+import random
 import unittest
-from multi_agent import run_world
+from multi_agent import _choose, _fresh_stats, run_world
+from simulator import STRATEGIES
 
 
 class MultiAgentTests(unittest.TestCase):
@@ -15,9 +17,17 @@ class MultiAgentTests(unittest.TestCase):
         self.assertEqual({row["agent"] for row in result["agents_ranked_by_observed_points_per_attempt"]},
                          {"scout", "analyst", "specialist"})
 
-    def test_invalid_rounds_rejected(self):
+    def test_agent_can_use_peer_results_for_untested_strategy(self):
+        stats = _fresh_stats()
+        social = {name: {"attempts": 0, "points": 0} for name in STRATEGIES}
+        social["strategy_gamma"] = {"attempts": 4, "points": 4}
+        self.assertEqual(_choose(stats, random.Random(1), 0, social, 0.5), "strategy_gamma")
+
+    def test_invalid_rounds_and_social_weight_rejected(self):
         with self.assertRaises(ValueError):
             run_world(0)
+        with self.assertRaises(ValueError):
+            run_world(10, social_weight=1.1)
 
 
 if __name__ == "__main__":
