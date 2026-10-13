@@ -21,3 +21,5 @@ jobs:
         run: python multi_agent.py --rounds 120 --seed 42
       - name: Run strategy benchmark
         run: python benchmark.py --seeds 10 --rounds 120
+      - name: Tune exploration and validate on held-out seeds
+        run: python benchmark.py --tune-epsilon --seeds 10 --rounds 120
