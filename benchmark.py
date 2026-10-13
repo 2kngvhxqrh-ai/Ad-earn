@@ -62,13 +62,35 @@ def run_epsilon_experiment(seeds=30, rounds=300):
                          "stddev": pstdev(scores)})
     winner = max(training, key=lambda row: row["mean_points_per_turn"])["epsilon"]
     # Offset seeds to keep the validation set distinct from tuning seeds.
+    validation_scores = {}
     validation = []
     for epsilon in EPSILON_CANDIDATES:
         scores = [_adaptive_score(seeds + seed + 10000, rounds, epsilon) for seed in range(seeds)]
+        validation_scores[epsilon] = scores
         validation.append({"epsilon": epsilon, "mean_points_per_turn": round(mean(scores), 5),
                            "stddev": round(pstdev(scores), 5)})
     selected_validation = next(row for row in validation if row["epsilon"] == winner)
     default_validation = next(row for row in validation if row["epsilon"] == 0.15)
+    # Paired seed-by-seed comparisons expose whether a tuning choice is robust,
+    # instead of relying only on the difference between two averages.
+    default_scores = validation_scores[0.15]
+    comparisons = []
+    for epsilon in EPSILON_CANDIDATES:
+        deltas = [candidate - baseline for candidate, baseline in zip(validation_scores[epsilon], default_scores)]
+        delta_mean = mean(deltas)
+        standard_error = pstdev(deltas) / (len(deltas) ** 0.5) if len(deltas) > 1 else 0.0
+        comparisons.append({
+            "epsilon": epsilon,
+            "mean_delta_vs_default": round(delta_mean, 5),
+            "approx_95pct_interval": [
+                round(delta_mean - 1.96 * standard_error, 5),
+                round(delta_mean + 1.96 * standard_error, 5),
+            ],
+            "validation_seeds_beaten": sum(delta > 0 for delta in deltas),
+            "validation_seeds_tied": sum(delta == 0 for delta in deltas),
+            "validation_seed_count": len(deltas),
+        })
+    selected_comparison = next(row for row in comparisons if row["epsilon"] == winner)
     return {
         "mode": "epsilon_tuning_with_holdout", "money_features": "DISABLED",
         "training_seeds": seeds, "validation_seeds": seeds, "rounds_per_seed": rounds,
@@ -77,6 +99,8 @@ def run_epsilon_experiment(seeds=30, rounds=300):
                               for row in training],
         "selected_epsilon": winner,
         "validation_results": validation,
+        "paired_validation_comparisons": comparisons,
+        "selected_paired_comparison": selected_comparison,
         "validation_comparison": {
             "selected_epsilon_mean": selected_validation["mean_points_per_turn"],
             "default_epsilon_0_15_mean": default_validation["mean_points_per_turn"],
