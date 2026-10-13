@@ -6,7 +6,7 @@ A zero-cost, money-free simulation for experimenting with autonomous strategies.
 
 - No money or currency represented in the program.
 - No revenue, profit, sales, payment, purchase, deposit, or financial-account features.
-- No paid services, third-party libraries, API calls, or network calls.
+- No paid services, third-party libraries, API calls, or network calls at runtime.
 - No real-world actions. It runs toy simulations using synthetic probabilities.
 - The score is abstract game points only; it is not an estimate of earnings.
 
@@ -15,12 +15,9 @@ A zero-cost, money-free simulation for experimenting with autonomous strategies.
 ```bash
 python simulator.py
 python -m unittest discover -s tests -v
+python agent.py --rounds 300 --seed 42
 ```
 
-Optional repeatable run:
+The adaptive agent uses an epsilon-greedy policy to choose among three toy strategies, observe abstract point outcomes, and rank strategies by observed points per attempt. It writes a local report to `data/agent_state.json`.
 
-```bash
-python simulator.py --attempts 250 --seed 7
-```
-
-The program compares three toy strategies and appends results to a local file at `data/simulation_ledger.json`. It does not contact websites or discover real opportunities. The probabilities are invented game parameters and should not be treated as evidence about real-world outcomes.
+The probabilities and point rewards are invented game parameters, not evidence about real-world outcomes. A fixed seed makes runs reproducible. No internet connection or external service is required at runtime.
