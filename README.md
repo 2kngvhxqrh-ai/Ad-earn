@@ -36,6 +36,12 @@ Reports and learning memory are written locally under `data/`, which is ignored 
 
 `benchmark.py` compares the adaptive agent with each fixed toy strategy over multiple deterministic seeds. It reports mean abstract points per turn and variability, rather than relying on one lucky run. Try `python benchmark.py --seeds 30 --rounds 300`. The benchmark tests only invented game rules and cannot estimate real-world earnings.
 
+## Independent scheduled operation
+
+The GitHub Actions workflow `.github/workflows/autonomous-lab.yml` runs daily at 06:17 UTC and can also be started manually from the Actions tab. It independently runs the test suite, baseline benchmark, and epsilon tuning on held-out seeds, then uploads JSON reports as a 30-day workflow artifact. The workflow has read-only repository permissions and does not modify code, contact people, access accounts, spend money, or call external APIs from the Python agent.
+
+This is scheduled batch execution, not a continuously running process. GitHub may delay scheduled runs. It evaluates the existing agent; it does not autonomously rewrite or deploy its own code. Human review is required before changing strategy logic.
+
 ## Important limitation
 
 The world is a small, synthetic game, not a general intelligence test. Its probabilities and point rewards are invented parameters. Results show only how these agents behave under those rules; they do not establish real-world ability.
