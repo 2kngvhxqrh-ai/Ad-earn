@@ -1,6 +1,9 @@
+import json
 import random
+import tempfile
 import unittest
-from multi_agent import _choose, _fresh_stats, run_world
+from pathlib import Path
+from multi_agent import _choose, _fresh_stats, _load_memory, run_world
 from simulator import STRATEGIES
 
 
@@ -22,6 +25,27 @@ class MultiAgentTests(unittest.TestCase):
         social = {name: {"attempts": 0, "points": 0} for name in STRATEGIES}
         social["strategy_gamma"] = {"attempts": 4, "points": 4}
         self.assertEqual(_choose(stats, random.Random(1), 0, social, 0.5), "strategy_gamma")
+
+    def test_memory_persists_and_resumes_learning(self):
+        first = run_world(30, 42)
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "memory.json"
+            path.write_text(json.dumps(first["memory"]), encoding="utf-8")
+            loaded = _load_memory(path)
+            second = run_world(15, 43, memory=loaded)
+        self.assertEqual(len(second["shared_event_board"]), 15)
+        for name in ("scout", "analyst", "specialist"):
+            before = sum(r["attempts"] for r in first["memory"]["agents"][name]["stats"].values())
+            after = sum(r["attempts"] for r in second["memory"]["agents"][name]["stats"].values())
+            self.assertGreaterEqual(after, before)
+        self.assertEqual(sum(r["attempts"] for r in second["memory"]["agents"]["scout"]["stats"].values()), 15)
+
+    def test_invalid_memory_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "bad.json"
+            path.write_text('{"version":999}', encoding="utf-8")
+            with self.assertRaises(ValueError):
+                _load_memory(path)
 
     def test_invalid_rounds_and_social_weight_rejected(self):
         with self.assertRaises(ValueError):
