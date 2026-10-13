@@ -1,4 +1,4 @@
-name: Paper simulator tests
+name: Money-free sandbox tests
 on:
   push:
   pull_request:
@@ -13,5 +13,9 @@ jobs:
           python-version: '3.12'
       - name: Run unit tests
         run: python -m unittest discover -s tests -v
-      - name: Run paper simulation
+      - name: Run strategy simulation
         run: python simulator.py --attempts 100 --seed 42
+      - name: Run adaptive agent
+        run: python agent.py --rounds 120 --seed 42
+      - name: Run multi-agent world
+        run: python multi_agent.py --rounds 120 --seed 42
