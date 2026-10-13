@@ -44,9 +44,15 @@ def run_benchmark(seeds=30, rounds=300, epsilon=0.15):
         "seeds_tested": seeds,
     } for name, scores in results.items()]
     summaries.sort(key=lambda row: row["mean_abstract_points_per_turn"], reverse=True)
+    theoretical = {
+        name: round(config["success_probability"] * config["score_per_success"], 8)
+        for name, config in STRATEGIES.items()
+    }
     return {
         "mode": "synthetic_benchmark", "money_features": "DISABLED",
         "seeds": seeds, "rounds_per_seed": rounds, "epsilon": epsilon,
+        "theoretical_fixed_strategy_points_per_turn": theoretical,
+        "fixed_strategy_expected_returns_equal": len(set(theoretical.values())) == 1,
         "ranking": summaries,
         "warning": "Synthetic game only. Scores are abstract points and do not predict income or real-world outcomes.",
     }
