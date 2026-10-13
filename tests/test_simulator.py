@@ -1,24 +1,21 @@
 import random
 import unittest
-from simulator import Experiment
+from simulator import simulate
 
-class ExperimentTests(unittest.TestCase):
-    def test_same_seed_repeats_same_result(self):
-        e = Experiment('test', 100, 0.2, 5.0, 0.0, 'synthetic')
-        self.assertEqual(e.run(random.Random(7)), e.run(random.Random(7)))
+class SimulationTests(unittest.TestCase):
+    def test_seed_is_repeatable(self):
+        config = {"success_probability": 0.2, "score_per_success": 3}
+        self.assertEqual(simulate("test", config, 100, random.Random(7)),
+                         simulate("test", config, 100, random.Random(7)))
 
-    def test_costs_are_subtracted(self):
-        e = Experiment('test', 10, 1.0, 2.0, 0.5, 'synthetic')
-        result = e.run(random.Random(1))
-        self.assertEqual(result['simulated_sales'], 10)
-        self.assertEqual(result['simulated_revenue'], 20.0)
-        self.assertEqual(result['estimated_costs'], 5.0)
-        self.assertEqual(result['simulated_net_profit'], 15.0)
+    def test_score_is_abstract_points(self):
+        config = {"success_probability": 1.0, "score_per_success": 2}
+        result = simulate("test", config, 10, random.Random(1))
+        self.assertEqual(result["successes"], 10)
+        self.assertEqual(result["abstract_score"], 20)
+        self.assertEqual(result["evidence"], "SYNTHETIC_GAME_RULES_ONLY")
+        self.assertNotIn("revenue", result)
+        self.assertNotIn("currency", result)
 
-    def test_results_are_marked_synthetic(self):
-        result = Experiment('test', 1, 0.0, 1.0, 0.0, 'synthetic').run(random.Random(1))
-        self.assertEqual(result['evidence_status'], 'SYNTHETIC_ASSUMPTIONS_NOT_REAL_MARKET_DATA')
-        self.assertEqual(result['simulated_sales'], 0)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
