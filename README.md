@@ -17,6 +17,7 @@ python simulator.py --attempts 100 --seed 42
 python -m unittest discover -s tests -v
 python agent.py --rounds 300 --seed 42
 python multi_agent.py --rounds 300 --seed 42
+python benchmark.py --seeds 30 --rounds 300
 ```
 
 ## Multi-agent toy world
@@ -30,6 +31,10 @@ python multi_agent.py --rounds 300 --seed 42
 Each agent keeps separate strategy statistics. All turns are recorded on a shared event board, and the final report ranks agents by observed abstract points per turn. The agents do not control external systems and do not communicate with network services.
 
 Reports and learning memory are written locally under `data/`, which is ignored by Git. A fixed seed makes a fresh run reproducible. By default each run starts fresh and saves memory; use `python multi_agent.py --rounds 300 --resume` to continue from saved per-agent statistics and a bounded history of peer outcomes. Use `--memory-path path/to/file.json` to choose a different local memory file. The memory file is local-only and is not committed.
+
+## Benchmarking
+
+`benchmark.py` compares the adaptive agent with each fixed toy strategy over multiple deterministic seeds. It reports mean abstract points per turn and variability, rather than relying on one lucky run. Try `python benchmark.py --seeds 30 --rounds 300`. The benchmark tests only invented game rules and cannot estimate real-world earnings.
 
 ## Important limitation
 
