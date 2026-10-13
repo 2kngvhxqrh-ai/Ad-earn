@@ -1,14 +1,14 @@
-# Autonomous Business Simulator (Paper Mode)
+# Autonomous Strategy Sandbox
 
-A zero-cost sandbox for testing online-revenue hypotheses without making purchases, sending messages, or moving real money.
+A zero-cost, money-free simulation for experimenting with autonomous strategies.
 
-## Safety and honesty
+## Absolute scope
 
-- **Paper mode only:** no payment integrations, purchases, outreach, or external API calls.
-- **No real earnings:** conversion rates and sale values are invented example assumptions, not market research or forecasts.
-- **Real money spent:** $0 for this prototype; verified real revenue remains $0.
-- **No third-party dependencies:** Python standard library only.
-- The $5/day target is an objective to evaluate, not a promised result.
+- No money or currency represented in the program.
+- No revenue, profit, sales, payment, purchase, deposit, or financial-account features.
+- No paid services, third-party libraries, API calls, or network calls.
+- No real-world actions. It runs toy simulations using synthetic probabilities.
+- The score is abstract game points only; it is not an estimate of earnings.
 
 ## Run
 
@@ -17,21 +17,10 @@ python simulator.py
 python -m unittest discover -s tests -v
 ```
 
-Optional parameters:
+Optional repeatable run:
 
 ```bash
 python simulator.py --attempts 250 --seed 7
 ```
 
-The program runs three synthetic strategies, prints results, and appends a local ledger at `data/paper_ledger.json`. The ledger is ignored by Git so local run data is not accidentally committed.
-
-## Current limitations
-
-This first version tests the mechanics of a simulation only. It does not discover real opportunities, access websites, create products, find customers, or earn money. Its conversion rates and prices are deliberately synthetic.
-
-## Next stages
-
-1. Add explicit assumptions and sensitivity analysis.
-2. Add evidence collection from permitted public sources, with no automated outreach or purchases.
-3. Compare simulated estimates with manually verified market evidence.
-4. Only consider real operation after explicit approval.
+The program compares three toy strategies and appends results to a local file at `data/simulation_ledger.json`. It does not contact websites or discover real opportunities. The probabilities are invented game parameters and should not be treated as evidence about real-world outcomes.
