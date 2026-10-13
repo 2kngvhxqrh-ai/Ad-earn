@@ -19,6 +19,10 @@ class BenchmarkTests(unittest.TestCase):
         self.assertEqual(result["validation_seeds"], 3)
         self.assertIn(result["selected_epsilon"], result["epsilon_candidates"])
         self.assertEqual(len(result["validation_results"]), len(result["epsilon_candidates"]))
+        self.assertEqual(len(result["paired_validation_comparisons"]), len(result["epsilon_candidates"]))
+        for comparison in result["paired_validation_comparisons"]:
+            self.assertEqual(comparison["validation_seed_count"], 3)
+            self.assertEqual(len(comparison["approx_95pct_interval"]), 2)
         self.assertEqual(result["validation_comparison"]["default_epsilon_0_15_mean"],
                          next(row["mean_points_per_turn"] for row in result["validation_results"]
                               if row["epsilon"] == 0.15))
