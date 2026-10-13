@@ -1,6 +1,6 @@
 # Autonomous Strategy Sandbox
 
-A zero-cost, money-free simulation for experimenting with autonomous strategies.
+A zero-cost, money-free sandbox for testing adaptive strategies and multiple autonomous toy agents.
 
 ## Absolute scope
 
@@ -8,16 +8,29 @@ A zero-cost, money-free simulation for experimenting with autonomous strategies.
 - No revenue, profit, sales, payment, purchase, deposit, or financial-account features.
 - No paid services, third-party libraries, API calls, or network calls at runtime.
 - No real-world actions. It runs toy simulations using synthetic probabilities.
-- The score is abstract game points only; it is not an estimate of earnings.
+- Scores are abstract game points only; they are not estimates of earnings or real-world performance.
 
 ## Run
 
 ```bash
-python simulator.py
+python simulator.py --attempts 100 --seed 42
 python -m unittest discover -s tests -v
 python agent.py --rounds 300 --seed 42
+python multi_agent.py --rounds 300 --seed 42
 ```
 
-The adaptive agent uses an epsilon-greedy policy to choose among three toy strategies, observe abstract point outcomes, and rank strategies by observed points per attempt. It writes a local report to `data/agent_state.json`.
+## Multi-agent toy world
 
-The probabilities and point rewards are invented game parameters, not evidence about real-world outcomes. A fixed seed makes runs reproducible. No internet connection or external service is required at runtime.
+`multi_agent.py` runs three independent agents in a shared, turn-based environment:
+
+- **Scout** explores more often.
+- **Analyst** balances exploration and exploiting observed results.
+- **Specialist** explores less and relies more on its own observed results.
+
+Each agent keeps separate strategy statistics. All turns are recorded on a shared event board, and the final report ranks agents by observed abstract points per turn. The agents do not control external systems and do not communicate with network services.
+
+Reports are written locally under `data/`, which is ignored by Git. A fixed seed makes the same run reproducible.
+
+## Important limitation
+
+The world is a small, synthetic game, not a general intelligence test. Its probabilities and point rewards are invented parameters. Results show only how these agents behave under those rules; they do not establish real-world ability.
